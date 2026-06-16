@@ -63,7 +63,6 @@
 
 <div class="container" id="mainContainer">
   
-  <!-- LOCKED SECTION -->
   <div id="lockedSection" class="locked-screen">
     <div class="locked-icon">🚫</div>
     <h2>Bài test đã bị khóa</h2>
@@ -73,7 +72,6 @@
     </p>
   </div>
 
-  <!-- INTRO SECTION -->
   <div id="introSection" class="section">
     <h1>AI FLUENCY ASSESSMENT - PATI GROUP</h1>
     <div class="subtitle">Bài test được thiết kế riêng cho các vị trí AI Native của PATI</div>
@@ -108,7 +106,6 @@
     <button class="btn btn-primary" onclick="startTest()">BẮT ĐẦU LÀM BÀI</button>
   </div>
 
-  <!-- PART 1 SECTION -->
   <div id="part1Section" class="section">
     <div class="header-bar">
       <div>
@@ -121,16 +118,13 @@
       </div>
     </div>
     
-    <div id="questionsContainer">
-      <!-- Questions injected by JS -->
-    </div>
+    <div id="questionsContainer"></div>
     
     <div style="margin-top: 40px; text-align: center;">
       <button class="btn btn-secondary" onclick="finishPart1()">HOÀN THÀNH PHẦN 1 & CHUYỂN SANG PHẦN 2</button>
     </div>
   </div>
 
-  <!-- PART 2 SECTION -->
   <div id="part2Section" class="section">
     <div class="header-bar">
       <div>
@@ -160,7 +154,6 @@
 
 </div>
 
-<!-- POPUP -->
 <div class="overlay" id="thankyouPopup">
   <div class="popup">
     <div class="popup-icon">✅</div>
@@ -173,16 +166,14 @@
 </div>
 
 <script>
-  // DISABLE RIGHT CLICK & F12 TO PREVENT "MÒ CODE"
   document.addEventListener('contextmenu', event => event.preventDefault());
   document.onkeydown = function(e) {
-    if(e.keyCode == 123) { return false; } // F12
-    if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; } // Ctrl+Shift+I
-    if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; } // Ctrl+Shift+J
-    if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } // Ctrl+U
+    if(e.keyCode == 123) { return false; } 
+    if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; } 
+    if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; } 
+    if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } 
   };
 
-  // CHECK LOCK STATUS
   const STATUS_KEY = "pati_test_status";
   const LOCK_REASON_KEY = "pati_lock_reason";
   
@@ -190,30 +181,23 @@
     localStorage.setItem(STATUS_KEY, "locked");
     localStorage.setItem(LOCK_REASON_KEY, reasonMsg);
     
-    // Hide all sections, show lock screen
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById('lockedSection').classList.add('active');
     document.getElementById('lockReason').innerHTML = reasonMsg;
     
-    // Stop timers
     if(timer1Interval) clearInterval(timer1Interval);
     if(timer2Interval) clearInterval(timer2Interval);
     
-    // Try to auto-submit current progress so we know they got locked
     submitFinal(true);
   }
 
-  // Detect visibility change (Tab switch, window minimize, open other apps)
   document.addEventListener("visibilitychange", function() {
-    // If they switch away while taking the test (status = started)
     if (document.hidden && localStorage.getItem(STATUS_KEY) === "started") {
       triggerLock("Hệ thống phát hiện bạn đã <strong>chuyển tab hoặc rời khỏi màn hình bài thi</strong> (mở ứng dụng khác/thu nhỏ trình duyệt).<br>Bài làm của bạn đã bị khóa lập tức theo đúng quy chế thi.");
     }
   });
 
-  // On page load check status
   if (localStorage.getItem(STATUS_KEY) === "locked" || localStorage.getItem(STATUS_KEY) === "started" || localStorage.getItem(STATUS_KEY) === "completed") {
-    // If they reload while started, it becomes locked
     if (localStorage.getItem(STATUS_KEY) === "started") {
       triggerLock("Hệ thống phát hiện bạn đã <strong>tải lại trang (F5) hoặc thoát trình duyệt giữa chừng</strong>.<br>Bài làm của bạn đã bị khóa theo quy chế thi (chỉ được thực hiện liên tục một lần).");
     } else if (localStorage.getItem(STATUS_KEY) === "locked") {
@@ -226,11 +210,9 @@
       document.getElementById('thankyouPopup').classList.add('active');
     }
   } else {
-    // Fresh start
     document.getElementById('introSection').classList.add('active');
   }
 
-  // WARNING BEFORE RELOAD
   window.addEventListener("beforeunload", function (e) {
     if (localStorage.getItem(STATUS_KEY) === "started") {
       const confirmationMessage = "Bạn đang làm bài test. Nếu tải lại trang, bài test sẽ bị hủy ngay lập tức. Bạn có chắc chắn muốn rời khỏi?";
@@ -239,18 +221,18 @@
     }
   });
 
-  const WEBHOOK_URL = "YOUR_LARK_WEBHOOK_URL_HERE"; 
+  const WEBHOOK_URL = "https://paticreativeagency.sg.larksuite.com/base/automation/webhook/event/BJISaXaQmwhUFyhwAmNlCuWwgEe"; 
   
   const QUESTIONS = [{"num": "1", "text": "Bạn vừa được giao một nhiệm vụ mới và đang cân nhắc có nên dùng AI hay không. Câu hỏi đầu tiên bạn phải tự hỏi là gì?", "options": [{"val": "A", "text": "A. AI tool nào đang phổ biến nhất hiện nay và có khả năng xử lý tốt loại nhiệm vụ này không?"}, {"val": "B", "text": "B. Nhiệm vụ này có phần nào phù hợp để AI hỗ trợ, phần nào cần phán xét của con người không?"}, {"val": "C", "text": "C. Chi phí và thời gian khi dùng AI cho nhiệm vụ này so với làm thủ công là bao nhiêu?"}, {"val": "D", "text": "D. Sếp của tôi có đồng ý và khuyến khích việc sử dụng AI cho loại nhiệm vụ này không?"}]}, {"num": "2", "text": "Trong các loại công việc dưới đây, loại nào phù hợp nhất để giao hoàn toàn cho AI thực hiện mà không cần người giám sát từng bước?", "options": [{"val": "A", "text": "A. Đánh giá xem một nhân viên có nên được thăng chức hay không dựa trên hồ sơ hiệu suất nhiều năm."}, {"val": "B", "text": "B. Quyết định chiến lược ưu tiên nào cần đầu tư ngân sách trong quý tiếp theo của cả tổ chức."}, {"val": "C", "text": "C. Chuyển đổi định dạng 200 file dữ liệu từ CSV sang JSON theo cấu trúc đã được định sẵn trước."}, {"val": "D", "text": "D. Phán xét xem một đối tác tiềm năng có đáng tin cậy để ký hợp đồng dài hạn với mình hay không."}]}, {"num": "3", "text": "Bạn cần tạo một loại báo cáo định kỳ giống nhau mỗi tuần từ dữ liệu có sẵn. Cách tiếp cận nào thể hiện tư duy Delegation hiệu quả nhất?", "options": [{"val": "A", "text": "A. Xây dựng một template prompt chuẩn và quy trình cố định để tái sử dụng mỗi tuần, không cần viết lại từ đầu."}, {"val": "B", "text": "B. Viết một prompt hoàn toàn mới cho mỗi tuần để AI luôn có góc nhìn tươi mới và sáng tạo hơn cho báo cáo."}, {"val": "C", "text": "C. Giao toàn bộ cho AI kể cả việc tìm kiếm dữ liệu đầu vào để tiết kiệm tối đa thời gian cho cả team."}, {"val": "D", "text": "D. Tự làm thủ công vì báo cáo định kỳ cần sự nhất quán cao mà AI thường khó có thể đảm bảo được."}]}, {"num": "4", "text": "Đồng nghiệp nói: \"AI giờ rất mạnh, cứ giao hết cho AI làm rồi mình review nhanh là xong.\" Phân tích nào đúng nhất về quan điểm này?", "options": [{"val": "A", "text": "A. Đúng hoàn toàn — AI hiện đại đã đủ mạnh để xử lý hầu hết công việc nên review nhanh là đủ."}, {"val": "B", "text": "B. Sai hoàn toàn — con người phải tự làm mọi thứ, AI chỉ nên dùng cho các việc thật sự nhỏ nhặt."}, {"val": "C", "text": "C. Đúng nếu dùng AI trả phí cao cấp, vì model mạnh hơn thường sẽ ít cần phải review hơn nhiều."}, {"val": "D", "text": "D. Đúng một phần — AI làm tốt nhiều việc, nhưng \"review nhanh\" thường bỏ sót lỗi logic và ngữ cảnh."}]}, {"num": "5", "text": "Khi làm việc với AI ở chế độ Augmentation — tức là cộng tác qua lại như với một đồng nghiệp — điều gì là đặc trưng phân biệt chế độ này với Automation?", "options": [{"val": "A", "text": "A. Augmentation đòi hỏi người dùng phải có kiến thức kỹ thuật sâu về AI mới có thể thực hiện được tốt."}, {"val": "B", "text": "B. Augmentation là quá trình lặp — người hỏi, AI trả lời, người phán xét và điều chỉnh — không phải ra lệnh một lần."}, {"val": "C", "text": "C. Augmentation chỉ phù hợp cho công việc sáng tạo, còn Automation phù hợp cho công việc phân tích dữ liệu hơn."}, {"val": "D", "text": "D. Augmentation tốn nhiều thời gian hơn và chỉ nên dùng khi Automation không thể cho ra kết quả đủ tốt được."}]}, {"num": "6", "text": "Bạn đang xây dựng quy trình có tích hợp AI Agent — tức là AI hoạt động độc lập thay mặt bạn. Rủi ro lớn nhất cần kiểm soát trước khi triển khai là gì?", "options": [{"val": "A", "text": "A. Chi phí vận hành Agent mỗi tháng có thể cao hơn dự kiến và khó kiểm soát ngân sách về lâu dài."}, {"val": "B", "text": "B. Nhân viên có thể phản đối vì lo ngại AI Agent sẽ thay thế dần vị trí của họ trong tổ chức."}, {"val": "C", "text": "C. AI Agent có thể hành động sai ý định do thiếu chính sách rõ ràng, giới hạn phạm vi và giám sát."}, {"val": "D", "text": "D. Công nghệ AI Agent hiện chưa đủ ổn định nên sẽ tạo ra nhiều lỗi hơn là mang lại lợi ích thực sự."}]}, {"num": "7", "text": "Bạn nhận ra mình đang dùng AI để tra cứu một thông tin mà bạn hoàn toàn có thể Google trong 10 giây. Đây là dấu hiệu của vấn đề gì trong Delegation?", "options": [{"val": "A", "text": "A. Thiếu Platform Awareness — chưa hiểu rõ từng tool phù hợp với loại tác vụ nào để phân bổ cho đúng."}, {"val": "B", "text": "B. Thiếu kỹ năng viết prompt — cần học cách diễn đạt câu hỏi tốt hơn để AI trả lời chính xác hơn nữa."}, {"val": "C", "text": "C. Vấn đề bình thường — dùng AI cho mọi việc sẽ tạo thói quen tốt và tăng năng suất tổng thể về sau."}, {"val": "D", "text": "D. Dấu hiệu tốt — tập trung vào dùng một công cụ duy nhất giúp làm việc nhanh và nhất quán hơn nhiều."}]}, {"num": "8", "text": "Nguyên tắc cốt lõi khi phân chia công việc giữa người và AI là gì?", "options": [{"val": "A", "text": "A. Giao cho AI những việc khó nhất để tận dụng sức mạnh tính toán, người làm những việc đơn giản còn lại."}, {"val": "B", "text": "B. Giao cho AI tất cả mọi thứ có thể tự động hóa để tối đa hóa năng suất, người chỉ review kết quả cuối cùng."}, {"val": "C", "text": "C. Luôn chia đôi công việc 50-50 giữa người và AI để đảm bảo sự cân bằng và tính an toàn cho quy trình."}, {"val": "D", "text": "D. Giao AI việc AI làm nhanh và tốt; giữ cho người các quyết định có trọng lượng đạo đức, pháp lý hoặc ảnh hưởng lớn."}]}, {"num": "9", "text": "Bạn muốn tích hợp AI vào quy trình xử lý yêu cầu nội bộ của team. Bước nào bắt buộc phải làm TRƯỚC KHI bắt đầu cài đặt bất kỳ tool nào?", "options": [{"val": "A", "text": "A. Chọn AI tool tốt nhất trên thị trường hiện tại và cài đặt thử nghiệm xem có phù hợp với team không."}, {"val": "B", "text": "B. Vẽ rõ quy trình hiện tại, xác định bước nào AI có thể hỗ trợ và bước nào bắt buộc cần người quyết định."}, {"val": "C", "text": "C. Hỏi ý kiến team về việc có muốn dùng AI không và thu thập đủ số phiếu đồng thuận trước khi tiến hành."}, {"val": "D", "text": "D. Xin phê duyệt ngân sách từ cấp trên và lập kế hoạch chi tiết cho toàn bộ dự án tích hợp AI sắp tới."}]}, {"num": "10", "text": "Sau 3 tháng dùng AI, bạn nhận ra mình ít suy nghĩ độc lập hơn — thấy AI đề xuất gì là đồng ý luôn mà không đặt câu hỏi. Đây là dấu hiệu của vấn đề gì và bạn cần làm gì?", "options": [{"val": "A", "text": "A. Dấu hiệu tích cực — có nghĩa là AI đang làm việc tốt và bạn đang tiết kiệm được nhiều năng lượng tư duy."}, {"val": "B", "text": "B. Vấn đề tạm thời — sẽ tự điều chỉnh khi AI bắt đầu mắc lỗi và bạn phải tự sửa những lỗi đó cho nó."}, {"val": "C", "text": "C. Dấu hiệu của automation bias — cần thực hành tự đưa ra nhận định trước, rồi mới dùng AI để đối chiếu lại."}, {"val": "D", "text": "D. Cần nghỉ dùng AI một tuần để \"reset\" lại thói quen tư duy và lấy lại khả năng phán đoán độc lập của bản thân."}]}, {"num": "11", "text": "Bạn muốn dùng AI để hỗ trợ một quy trình ra quyết định quan trọng. Cách nào thể hiện Delegation đúng đắn nhất?", "options": [{"val": "A", "text": "A. Dùng AI tổng hợp thông tin, phân tích các lựa chọn và đưa ra pros/cons — người đưa ra quyết định cuối và chịu trách nhiệm."}, {"val": "B", "text": "B. Dùng AI để đưa ra quyết định dựa trên dữ liệu khách quan, người chỉ cần ký tên phê duyệt quyết định đó là xong."}, {"val": "C", "text": "C. Không dùng AI cho các quyết định quan trọng vì rủi ro quá cao và trách nhiệm thường không thể phân chia rõ ràng."}, {"val": "D", "text": "D. Dùng nhiều AI tool khác nhau để so sánh kết quả, chọn output nào được nhiều AI đồng thuận nhất để ra quyết định."}]}, {"num": "12", "text": "Bạn đang thiết kế hệ thống AI hỗ trợ toàn team, không chỉ cho bản thân. Yếu tố nào là quan trọng nhất để hệ thống này hoạt động bền vững?", "options": [{"val": "A", "text": "A. Chọn AI tool mạnh nhất và đắt nhất hiện có để đảm bảo chất lượng đầu ra cho toàn bộ các thành viên team."}, {"val": "B", "text": "B. Đào tạo một AI chuyên gia trong team để người đó quản lý mọi tương tác với AI thay cho cả nhóm còn lại."}, {"val": "C", "text": "C. Cho phép mỗi người tự do khám phá và xây dựng cách dùng AI riêng phù hợp với phong cách cá nhân của mình."}, {"val": "D", "text": "D. Xây thư viện workflow và template dùng chung, kèm hướng dẫn rõ phần nào AI làm và phần nào người quyết định."}]}, {"num": "13", "text": "Bạn yêu cầu AI tóm tắt một tài liệu dài và nhận được kết quả quá chi tiết, dài gần bằng bản gốc. Nguyên nhân chính xác nhất là gì?", "options": [{"val": "A", "text": "A. AI model đang gặp lỗi kỹ thuật và cần được khởi động lại hoặc chuyển sang một phiên chat mới hoàn toàn."}, {"val": "B", "text": "B. Tài liệu quá phức tạp nên AI không thể tóm tắt ngắn hơn nữa mà vẫn giữ được toàn bộ nội dung quan trọng."}, {"val": "C", "text": "C. Prompt thiếu Product Description — chưa chỉ định rõ độ dài, định dạng và mức độ chi tiết cần có cho output."}, {"val": "D", "text": "D. AI mặc định luôn tạo ra output dài và cần được fine-tune lại để phù hợp với nhu cầu cụ thể của người dùng."}]}, {"num": "14", "text": "Bạn cần AI phân tích một vấn đề phức tạp và muốn kết quả có lập luận chặt chẽ, ít lỗi logic. Kỹ thuật nào trong Description giúp ích nhất?", "options": [{"val": "A", "text": "A. Yêu cầu AI trình bày từng bước suy luận trước khi đưa ra kết luận — còn gọi là \"think step by step\"."}, {"val": "B", "text": "B. Yêu cầu AI trả lời ngắn gọn nhất có thể để tránh việc AI tự đưa vào những nội dung không cần thiết."}, {"val": "C", "text": "C. Gửi cùng một câu hỏi cho nhiều AI khác nhau rồi so sánh và tổng hợp các câu trả lời nhận được lại."}, {"val": "D", "text": "D. Viết prompt thật dài và chi tiết để AI có đủ ngữ cảnh mà không cần phải suy luận thêm bất cứ điều gì."}]}, {"num": "15", "text": "Trong ba lớp Description — Product, Process, Performance — \"Performance Description\" là lớp ít người dùng nhất nhưng tạo ra sự khác biệt lớn. Nó mô tả điều gì?", "options": [{"val": "A", "text": "A. Kết quả đầu ra mà bạn muốn AI tạo ra — bao gồm định dạng, độ dài và các tiêu chí đánh giá thành công."}, {"val": "B", "text": "B. Các bước cụ thể mà AI cần thực hiện để đi từ thông tin đầu vào đến kết quả đầu ra mong muốn cuối cùng."}, {"val": "C", "text": "C. Hiệu suất và tốc độ xử lý mà bạn kỳ vọng AI đạt được trong một khoảng thời gian nhất định cho task."}, {"val": "D", "text": "D. Cách AI nên cư xử, giọng điệu, vai trò và mức độ phản biện trong suốt quá trình cộng tác cùng với bạn."}]}, {"num": "16", "text": "Bạn muốn AI review một kế hoạch của mình và đưa ra phản hồi thực sự sâu sắc, không phải lời khen xã giao. Prompt nào cho kết quả tốt nhất?", "options": [{"val": "A", "text": "A. \"Review kế hoạch này và cho tôi biết điểm mạnh và điểm yếu — hãy thật thẳng thắn và khách quan với nó.\""}, {"val": "B", "text": "B. \"Đóng vai nhà đầu tư khắt khe đang cân nhắc rót vốn. Nêu 3 lý do lớn nhất khiến bạn sẽ từ chối kế hoạch này.\""}, {"val": "C", "text": "C. \"Phân tích kế hoạch này một cách toàn diện và chuyên sâu, tập trung vào những khía cạnh quan trọng nhất nhé.\""}, {"val": "D", "text": "D. \"Đây là kế hoạch tôi vừa làm, tôi muốn feedback chân thực — đừng ngại chỉ ra lỗi sai nếu có với tôi nhé.\""}]}, {"num": "17", "text": "AI liên tục đưa ra kết quả nghe hay về lý thuyết nhưng không thực tế với nguồn lực và thời gian bạn có. Điều chỉnh nào trong prompt giải quyết vấn đề này hiệu quả nhất?", "options": [{"val": "A", "text": "A. Chuyển sang dùng một AI tool khác vì tool hiện tại không phù hợp với loại bài toán thực tiễn dạng này."}, {"val": "B", "text": "B. Yêu cầu AI giải thích chi tiết hơn để bạn tự đánh giá tính khả thi của từng đề xuất nhận được sau đó."}, {"val": "C", "text": "C. Thêm vào prompt ràng buộc rõ: ngân sách, nhân lực, timeline — và yêu cầu AI đánh dấu đề xuất nào vượt giới hạn."}, {"val": "D", "text": "D. Chỉ dùng AI cho phần ý tưởng, sau đó tự đánh giá tính khả thi mà không cần yêu cầu AI làm thêm điều này."}]}, {"num": "18", "text": "Sau 5 vòng chỉnh sửa, AI vẫn không đưa ra được output đúng ý. Chẩn đoán nào đúng nhất và hành động tiếp theo là gì?", "options": [{"val": "A", "text": "A. Khả năng cao là bạn chưa diễn đạt rõ được output muốn — cần dừng lại, tự viết một ví dụ mẫu để AI noi theo."}, {"val": "B", "text": "B. AI đang bị lỗi kỹ thuật trong phiên hội thoại này — cần refresh lại trang hoặc bắt đầu một cuộc hội thoại mới."}, {"val": "C", "text": "C. Task này quá phức tạp so với khả năng của AI hiện tại — nên tự làm thủ công thay vì tiếp tục lãng phí thời gian."}, {"val": "D", "text": "D. Cần cung cấp thêm thật nhiều tài liệu tham khảo nữa để AI có đủ thông tin để làm đúng yêu cầu của bạn đặt ra."}]}, {"num": "19", "text": "Bạn cần AI phân tích một lượng lớn phản hồi từ người dùng để tìm ra các vấn đề phổ biến nhất. Loại mô tả nào trong Process Description cần thiết nhất?", "options": [{"val": "A", "text": "A. Nói cho AI biết bạn cần kết quả trong bao nhiêu phút và đang trình bày kết quả với ai để AI ưu tiên cho đúng."}, {"val": "B", "text": "B. Cung cấp toàn bộ dữ liệu và để AI tự quyết định phương pháp phân tích tốt nhất cho bài toán đang được giao."}, {"val": "C", "text": "C. Yêu cầu AI chấm điểm từng phản hồi theo thang điểm 1–10 rồi sắp xếp lại từ tệ nhất đến tốt nhất trong danh sách."}, {"val": "D", "text": "D. Định nghĩa rõ: taxonomy phân loại vấn đề, format output mong muốn, và cách xử lý khi phản hồi không rõ thuộc nhóm."}]}, {"num": "20", "text": "Bạn đang yêu cầu AI viết nội dung nhưng kết quả cứ ra giọng văn chung chung, thiếu cá tính của thương hiệu. Cách xử lý nào đúng nhất?", "options": [{"val": "A", "text": "A. Yêu cầu AI viết lại nhiều lần hơn cho đến khi tình cờ ra được giọng văn phù hợp với mong muốn của bạn."}, {"val": "B", "text": "B. Thêm vào prompt 2–3 đoạn mẫu thể hiện đúng giọng văn mong muốn để AI học theo phong cách viết đó."}, {"val": "C", "text": "C. Chuyển sang dùng AI khác được training riêng cho mục đích viết nội dung thương hiệu chuyên biệt hơn."}, {"val": "D", "text": "D. Tự chỉnh sửa hoàn toàn kết quả AI tạo ra vì AI không thể nào học được giọng văn thương hiệu đặc thù."}]}, {"num": "21", "text": "Khi viết System Prompt — tức là hướng dẫn nền tảng cho AI agent hoạt động lâu dài — yếu tố nào quan trọng nhất phải định nghĩa rõ?", "options": [{"val": "A", "text": "A. Liệt kê đầy đủ tất cả các từ khóa mà AI cần nhận ra để phân loại đúng được loại yêu cầu được gửi đến."}, {"val": "B", "text": "B. Mô tả chi tiết lịch sử công ty, văn hóa tổ chức và thông tin về tất cả các nhân sự chủ chốt trong tổ chức."}, {"val": "C", "text": "C. Xác định rõ tình huống nào AI được phép tự xử lý và tình huống nào bắt buộc phải chuyển cho người, kèm ví dụ."}, {"val": "D", "text": "D. Cài đặt giọng điệu và phong cách giao tiếp thật chuyên nghiệp và lịch sự cho mọi phản hồi của AI khi vận hành."}]}, {"num": "22", "text": "Bạn muốn xây dựng prompt template chuẩn cho cả team sử dụng — không phải chỉ cho bản thân. Cấu trúc nào cho ra kết quả nhất quán nhất khi nhiều người dùng?", "options": [{"val": "A", "text": "A. Template có phần cố định (role, output format, constraints) và phần biến đổi (dữ liệu input) — người dùng chỉ điền vào phần biến đổi."}, {"val": "B", "text": "B. Một prompt thật ngắn gọn và dễ nhớ để cả team có thể gõ lại từ ký ức mà không cần phải copy-paste lại từ tài liệu mỗi lần."}, {"val": "C", "text": "C. Một prompt linh hoạt và không có cấu trúc cứng để mỗi người tự điều chỉnh theo phong cách riêng của bản thân mỗi khi dùng."}, {"val": "D", "text": "D. Bộ 10–15 prompt ngắn cho từng loại task để mỗi người tự chọn prompt phù hợp nhất với tình huống thực tế đang gặp phải."}]}, {"num": "23", "text": "Bạn cần AI thực hiện một nhiệm vụ phức tạp gồm nhiều bước liên tiếp. So với việc gộp tất cả vào một prompt duy nhất, kỹ thuật \"chuỗi prompt\" (chain of prompts) có ưu điểm gì?", "options": [{"val": "A", "text": "A. Chuỗi prompt tiết kiệm thời gian hơn vì mỗi prompt ngắn hơn và AI xử lý nhanh hơn khi gặp prompt dài hơn."}, {"val": "B", "text": "B. Prompt gộp luôn tốt hơn vì AI có toàn bộ context từ ban đầu và không bị mất thông tin giữa các bước thực thi."}, {"val": "C", "text": "C. Chuỗi prompt chỉ cần khi dùng AI model yếu; còn model mạnh hiện đại có thể xử lý tốt mọi prompt phức tạp khác."}, {"val": "D", "text": "D. Chuỗi prompt cho phép kiểm tra output từng bước trước khi dùng làm input bước sau, giúp giảm lỗi tích lũy và dễ debug."}]}, {"num": "24", "text": "Bạn đang xây dựng một AI assistant trả lời câu hỏi nội bộ của team về quy trình và chính sách. Yếu tố nào quyết định chất lượng câu trả lời của assistant này nhiều nhất?", "options": [{"val": "A", "text": "A. AI model mạnh hay yếu — model mạnh hơn sẽ luôn cho câu trả lời chính xác hơn bất kể chất lượng tài liệu nguồn."}, {"val": "B", "text": "B. Chất lượng và tổ chức của knowledge base — tài liệu nguồn phải chính xác, cập nhật và có cấu trúc rõ ràng nhất quán."}, {"val": "C", "text": "C. Giao diện người dùng của assistant — UI dễ dùng khiến mọi người dùng nó nhiều hơn và đánh giá tốt hơn về tool."}, {"val": "D", "text": "D. Số lượng câu hỏi và câu trả lời mẫu được train trước — càng nhiều mẫu thì AI càng trả lời chính xác cho câu mới hơn."}]}, {"num": "25", "text": "Prompt của bạn rất dài vì cần cung cấp nhiều ngữ cảnh. Cách nào giúp AI xử lý đúng mà không bỏ sót thông tin quan trọng ở giữa?", "options": [{"val": "A", "text": "A. Viết thật chi tiết và cụ thể ở phần giữa vì đây là phần AI thường chú ý nhất trong khi đang xử lý văn bản dài."}, {"val": "B", "text": "B. Chia nhỏ thành nhiều câu hỏi riêng biệt và gửi lần lượt để AI không phải xử lý quá nhiều thứ trong cùng một lúc."}, {"val": "C", "text": "C. Đặt yêu cầu quan trọng ở đầu và cuối prompt, dùng XML tag hoặc dấu phân cách để làm nổi bật các phần chính lên."}, {"val": "D", "text": "D. Viết in hoa toàn bộ phần quan trọng và thêm thật nhiều dấu chấm than để nhấn mạnh mức độ ưu tiên của nội dung đó."}]}, {"num": "26", "text": "Bạn cần AI viết ngắn lại một văn bản nhưng AI cứ cắt bỏ mất những ý quan trọng. Cách viết lại prompt nào giải quyết đúng vấn đề này?", "options": [{"val": "A", "text": "A. \"Viết ngắn lại trong tối đa [X] từ, nhưng BẮT BUỘC giữ lại: [luận điểm A] và [hành động B] — đây là hai điểm không được bỏ.\""}, {"val": "B", "text": "B. \"Hãy viết ngắn lại nhưng cẩn thận và suy nghĩ thật kỹ trước khi xóa bỏ bất kỳ nội dung nào của văn bản gốc ban đầu này.\""}, {"val": "C", "text": "C. \"Viết lại một phiên bản khác chuyên nghiệp hơn và ngắn gọn hơn so với phiên bản hiện tại đang có ở phía trên đây nhé.\""}, {"val": "D", "text": "D. \"Làm cho văn bản này ngắn gọn nhất có thể mà vẫn đảm bảo đầy đủ ý chính và dễ hiểu cho người đọc bình thường nhất.\""}]}, {"num": "27", "text": "AI vừa cung cấp số liệu cụ thể kèm tên nguồn trích dẫn cho một báo cáo quan trọng. Bước bắt buộc nào phải thực hiện trước khi dùng thông tin này?", "options": [{"val": "A", "text": "A. Kiểm tra xem văn phong có chuyên nghiệp và phù hợp với đối tượng người đọc của báo cáo lần này hay không."}, {"val": "B", "text": "B. Truy cập và xác minh nguồn được trích dẫn — AI có thể bịa tên nguồn hoặc số liệu nghe hợp lý nhưng không có thật."}, {"val": "C", "text": "C. Hỏi lại AI cùng câu hỏi đó để xem kết quả có nhất quán không — nếu AI trả lời giống nhau thì có thể tin tưởng."}, {"val": "D", "text": "D. Nhờ một AI khác kiểm tra lại thông tin — nếu cả hai AI đồng ý với nhau thì thông tin đó đáng tin cậy hơn nhiều."}]}, {"num": "28", "text": "Dấu hiệu nào cảnh báo cao nhất rằng AI đang có khả năng hallucination — tức là bịa thông tin một cách tự tin?", "options": [{"val": "A", "text": "A. AI trả lời chậm hơn bình thường và thêm nhiều dấu chấm lửng ở giữa các câu trong nội dung phản hồi gửi cho bạn."}, {"val": "B", "text": "B. AI từ chối trả lời và nói rằng không có đủ thông tin để có thể đưa ra một câu trả lời chính xác cho câu hỏi đó."}, {"val": "C", "text": "C. AI cung cấp quá nhiều lựa chọn và nhiều phương án thay thế khác nhau cho cùng một câu hỏi đã được đặt ra ban đầu."}, {"val": "D", "text": "D. AI đưa ra thông tin rất cụ thể — tên người, số liệu, ngày tháng — với giọng tự tin nhưng không có nguồn kiểm chứng."}]}, {"num": "29", "text": "AI vừa đề xuất một giải pháp nghe có vẻ logic và đầy đủ, nhưng bạn chưa chắc về độ chính xác. Cách kiểm tra hiệu quả nhất là gì?", "options": [{"val": "A", "text": "A. Yêu cầu AI giải thích từng bước lập luận, đặt câu hỏi về các giả định ẩn, và tự kiểm tra trên ví dụ nhỏ trước khi áp dụng."}, {"val": "B", "text": "B. Hỏi AI: \"Bạn có chắc chắn về giải pháp này không?\" — nếu AI xác nhận lại lần nữa thì có thể tin tưởng và triển khai luôn."}, {"val": "C", "text": "C. Triển khai thử trong môi trường thực tế với quy mô nhỏ và quan sát xem có phát sinh vấn đề gì khác lạ trong quá trình."}, {"val": "D", "text": "D. So sánh với kết quả tìm được trên Google và chọn phương án nào được nhiều trang web đề cập nhất để làm phương án cuối."}]}, {"num": "30", "text": "Bạn nhờ AI phân tích điểm mạnh và điểm yếu của một kế hoạch. AI liệt kê 6 điểm mạnh và 2 điểm yếu rất nhỏ. Vấn đề tiềm ẩn ở đây là gì?", "options": [{"val": "A", "text": "A. Kết quả hoàn toàn bình thường — một kế hoạch tốt thực sự có thể có nhiều điểm mạnh hơn điểm yếu trong phân tích."}, {"val": "B", "text": "B. AI đưa ra quá ít điểm yếu nên cần yêu cầu AI viết thêm điểm yếu để đảm bảo tính cân bằng của bài phân tích này."}, {"val": "C", "text": "C. AI có xu hướng xu nịnh (sycophancy) — thiên về đồng ý và khen hơn là chỉ ra lỗi thật, nhất là khi không yêu cầu phản biện."}, {"val": "D", "text": "D. Cần thêm thông tin về đối thủ cạnh tranh để AI có cơ sở so sánh và tìm ra thêm điểm yếu tương đối nhiều hơn nữa."}]}, {"num": "31", "text": "Khi đánh giá Process Discernment — tức là đánh giá cách AI xử lý, không chỉ kết quả cuối — bạn cần kiểm tra điều gì?", "options": [{"val": "A", "text": "A. AI có trả lời nhanh không — tốc độ phản hồi nhanh thường phản ánh AI đang xử lý tốt và chính xác hơn các tool khác."}, {"val": "B", "text": "B. AI có dùng nhiều bullet point và heading rõ ràng không — format trình bày tốt thường phản ánh tư duy có cấu trúc bên dưới."}, {"val": "C", "text": "C. AI có đồng ý với quan điểm ban đầu của bạn không — nếu AI xác nhận thì logic của bạn cũng đã đúng từ đầu rồi."}, {"val": "D", "text": "D. AI có nhận diện đúng vấn đề cốt lõi không, có bỏ sót giả định quan trọng không, và lập luận có mạch lạc từ tiền đề đến kết luận không."}]}, {"num": "32", "text": "AI cung cấp cho bạn một danh sách \"xu hướng mới nhất\" trong lĩnh vực của bạn. Vấn đề nào cần kiểm tra đầu tiên?", "options": [{"val": "A", "text": "A. Kiểm tra knowledge cutoff của model — thông tin \"mới nhất\" của AI có thể đã cũ 1–2 năm và không phản ánh thực tế."}, {"val": "B", "text": "B. Kiểm tra ngữ pháp và chính tả toàn bộ danh sách thật kỹ trước khi đem dùng vào tài liệu chính thức của bạn."}, {"val": "C", "text": "C. Kiểm tra xem danh sách có đủ dài không — nếu ít hơn 10 xu hướng thì cần yêu cầu AI bổ sung thêm cho đủ."}, {"val": "D", "text": "D. Kiểm tra xem có tên các công ty nổi tiếng được đề cập không để đánh giá độ tin cậy của thông tin trong danh sách."}]}, {"num": "33", "text": "AI kết luận \"Phương án A hiệu quả hơn phương án B.\" Câu hỏi phản biện quan trọng nhất bạn cần đặt ra là gì?", "options": [{"val": "A", "text": "A. Ai đã tạo ra phương án A ban đầu — nếu là người có kinh nghiệm thì kết luận của AI nhiều khả năng sẽ là đúng."}, {"val": "B", "text": "B. \"Hiệu quả hơn\" theo metric nào, có kiểm soát các biến nhiễu không, và dữ liệu có đủ để kết luận có ý nghĩa không?"}, {"val": "C", "text": "C. Kết quả của AI có khớp với cảm nhận của team không — nếu khớp thì kết luận của AI đáng tin cậy hơn nhiều lần."}, {"val": "D", "text": "D. Phương án A đã được thực hiện trong bao lâu — thời gian thực hiện càng dài thường cho dữ liệu càng tin cậy hơn."}]}, {"num": "34", "text": "AI vừa tạo ra một đoạn code chạy không bị lỗi. Điều gì bạn vẫn cần kiểm tra trước khi sử dụng trong môi trường thực tế?", "options": [{"val": "A", "text": "A. Kiểm tra xem code có được comment đầy đủ và rõ ràng hay không để team sau này dễ bảo trì khi cần chỉnh sửa thêm."}, {"val": "B", "text": "B. Không cần kiểm tra gì thêm — code chạy không có lỗi là đảm bảo đủ điều kiện để triển khai vào môi trường thực tế."}, {"val": "C", "text": "C. Kiểm tra code có xử lý đúng logic nghiệp vụ và các trường hợp ngoại lệ không — chạy được không đồng nghĩa với kết quả đúng."}, {"val": "D", "text": "D. Kiểm tra xem code đã được tối ưu hóa về hiệu suất hay chưa vì AI thường tạo code đúng logic nhưng chưa chạy đủ nhanh."}]}, {"num": "35", "text": "Khi đánh giá Performance Discernment — tức là đánh giá hành vi của AI trong quá trình tương tác — bạn cần chú ý điều gì?", "options": [{"val": "A", "text": "A. AI có trả lời đúng format và độ dài bạn yêu cầu không — đây thường là chỉ số tốt nhất phản ánh hành vi của AI khi làm việc."}, {"val": "B", "text": "B. AI có dùng ngôn ngữ lịch sự và thân thiện không — đây là dấu hiệu cho thấy AI đã được huấn luyện tốt và đáng tin cậy."}, {"val": "C", "text": "C. AI có đặt nhiều câu hỏi ngược lại không — AI hỏi nhiều thường là dấu hiệu không đủ năng lực để xử lý task được giao."}, {"val": "D", "text": "D. AI có đang đồng ý quá dễ không, có tự thừa nhận giới hạn của mình không, và có đang hoạt động đúng vai trò được giao không."}]}, {"num": "36", "text": "Bạn nhận ra AI đang liên tục đồng ý với mọi điều chỉnh bạn yêu cầu, kể cả khi những điều chỉnh đó mâu thuẫn với yêu cầu ban đầu. Cách xử lý nào thể hiện Discernment tốt nhất?", "options": [{"val": "A", "text": "A. Nhận ra đây là dấu hiệu xu nịnh — chủ động yêu cầu AI rà soát lại tất cả thay đổi và chỉ ra mâu thuẫn nội tại nếu có."}, {"val": "B", "text": "B. Chấp nhận điều đó vì AI đang thực hiện đúng nhiệm vụ là đáp ứng linh hoạt các yêu cầu thay đổi liên tục của bạn đề ra."}, {"val": "C", "text": "C. Khởi động lại phiên hội thoại vì AI đang bị \"nhầm lẫn\" do nhận quá nhiều yêu cầu thay đổi liên tiếp nhau trong thời gian ngắn."}, {"val": "D", "text": "D. Ngừng dùng AI cho task này và tự làm thủ công vì AI không còn đáng tin cậy nữa trong các tình huống tương tự như thế này."}]}, {"num": "37", "text": "Bạn dùng AI tổng hợp dữ liệu để đưa ra quyết định. AI cho kết quả: \"Phương án X tốt hơn.\" Nhưng bạn không thể kiểm tra lại được dữ liệu gốc. Đây là vấn đề gì và cần làm gì?", "options": [{"val": "A", "text": "A. Không có vấn đề gì lớn — AI đã phân tích dữ liệu và đưa ra kết luận, việc của người là hành động theo kết luận đó là đủ."}, {"val": "B", "text": "B. Đây là rủi ro \"black box\" — trước khi quyết định, cần yêu cầu AI trích dẫn dữ liệu nào dẫn đến kết luận và verify được một phần."}, {"val": "C", "text": "C. Đây là giới hạn kỹ thuật bình thường — chấp nhận kết quả vì AI xử lý dữ liệu thường khách quan hơn so với người trong nhiều việc."}, {"val": "D", "text": "D. Cần chuyển sang AI tool khác có khả năng hiển thị toàn bộ quá trình phân tích dữ liệu một cách minh bạch hơn so với tool cũ."}]}, {"num": "38", "text": "Bạn nhờ AI phân tích user research. AI đưa ra insight: \"Người dùng muốn tính năng X vì họ cảm thấy Y.\" Câu hỏi Discernment quan trọng nhất cần đặt ra là gì?", "options": [{"val": "A", "text": "A. Tính năng X có đang được đối thủ cung cấp chưa và chi phí phát triển tương ứng cho tính năng này dự kiến là khoảng bao nhiêu?"}, {"val": "B", "text": "B. AI có đang dùng đúng thuật ngữ nghiên cứu người dùng chuẩn mực trong lĩnh vực UX hay đang dùng từ ngữ chung chung không?"}, {"val": "C", "text": "C. Insight \"Y\" xuất hiện ở đâu trong raw data, bao nhiêu người đề cập đến nó, và đây là điều họ nói hay điều họ thực sự làm?"}, {"val": "D", "text": "D. Kết quả AI có trùng khớp với linh cảm ban đầu của team không — nếu khớp thì insight đó nhiều khả năng đáng tin cậy hơn nữa."}]}, {"num": "39", "text": "Bạn dùng AI để soạn thảo tài liệu pháp lý nội bộ. AI tạo ra văn bản trông rất chuyên nghiệp, đầy đủ điều khoản. Mức độ tin cậy phù hợp nhất là gì?", "options": [{"val": "A", "text": "A. Tin tưởng hoàn toàn — AI được huấn luyện trên rất nhiều tài liệu pháp lý nên sẽ tạo ra văn bản chính xác về mặt pháp lý."}, {"val": "B", "text": "B. Không dùng gì từ AI cho tài liệu pháp lý — luôn phải thuê luật sư viết hoàn toàn từ đầu để đảm bảo an toàn pháp lý cao nhất."}, {"val": "C", "text": "C. Tin tưởng nếu AI không thêm cảnh báo disclaimer — AI sẽ tự thêm disclaimer khi không chắc chắn về nội dung mình tạo ra."}, {"val": "D", "text": "D. Dùng làm bản draft ban đầu để tiết kiệm thời gian, nhưng bắt buộc có người có chuyên môn pháp lý review trước khi áp dụng chính thức."}]}, {"num": "40", "text": "Bạn cần so sánh output từ 3 AI tool khác nhau cho cùng một task quan trọng. Tiêu chí đánh giá nào phản ánh Discernment ở mức cao nhất?", "options": [{"val": "A", "text": "A. Đánh giá từng output theo 4 tiêu chí: độ chính xác, tính đầy đủ, chất lượng lập luận, khả năng dùng ngay — rồi chọn hoặc tổng hợp."}, {"val": "B", "text": "B. Chọn output dài nhất vì độ dài thường phản ánh AI đã xử lý kỹ lưỡng và cung cấp thông tin đầy đủ hơn cho người dùng cuối."}, {"val": "C", "text": "C. Chọn output từ AI tool đắt tiền nhất vì chi phí cao thường tương quan với chất lượng đầu ra tốt hơn so với các tool rẻ hơn."}, {"val": "D", "text": "D. Cho cả team vote chọn output ưa thích nhất — đánh giá tập thể thường cho kết quả khách quan và chính xác hơn cá nhân nhiều."}]}, {"num": "41", "text": "Bạn dùng AI viết một tài liệu và gửi đi dưới tên mình. Nếu tài liệu đó có thông tin sai, trách nhiệm thuộc về ai?", "options": [{"val": "A", "text": "A. Nhà cung cấp AI tool — họ có nghĩa vụ đảm bảo tính chính xác của thông tin do hệ thống của họ tạo ra cho người dùng cuối."}, {"val": "B", "text": "B. Chia sẻ 50/50 giữa bạn và AI tool — vì cả hai bên đều tham gia vào quá trình tạo ra tài liệu đó nên cùng chịu trách nhiệm."}, {"val": "C", "text": "C. Hoàn toàn là bạn — khi bạn gửi đi dưới tên mình, bạn chịu 100% trách nhiệm về nội dung và hệ quả phát sinh từ tài liệu đó."}, {"val": "D", "text": "D. Không có ai chịu trách nhiệm rõ ràng — đây là lý do cần ghi rõ \"được tạo bởi AI\" trong mọi tài liệu có dùng AI để hỗ trợ."}]}, {"num": "42", "text": "Trước khi nhập dữ liệu vào một AI tool để xử lý, câu hỏi quan trọng nhất thuộc về Creation Diligence bạn phải tự hỏi là gì?", "options": [{"val": "A", "text": "A. AI tool này có xử lý được lượng dữ liệu lớn như vậy mà không gặp phải tình trạng chậm hay bị giới hạn về tốc độ không?"}, {"val": "B", "text": "B. Dữ liệu này có chứa thông tin cá nhân, bí mật kinh doanh hoặc dữ liệu nhạy cảm không được phép nhập vào tool bên ngoài không?"}, {"val": "C", "text": "C. Chi phí sử dụng AI tool này có vượt quá ngân sách phần mềm đã được phê duyệt của tổ chức trong kỳ tài chính này không?"}, {"val": "D", "text": "D. AI tool này có được đồng nghiệp trong ngành đánh giá cao và được dùng phổ biến trong tổ chức tương tự khác hiện nay không?"}]}, {"num": "43", "text": "Khi nào bạn cần công khai với người nhận rằng nội dung được tạo hoặc hỗ trợ đáng kể bởi AI?", "options": [{"val": "A", "text": "A. Luôn luôn trong mọi trường hợp — dùng AI mà không nói ra là thiếu trung thực và thiếu chuyên nghiệp với người nhận nội dung đó."}, {"val": "B", "text": "B. Không bao giờ cần — công cụ AI chỉ là phương tiện hỗ trợ như công cụ spell checker hay công cụ tìm kiếm thông thường khác."}, {"val": "C", "text": "C. Chỉ khi AI tạo ra kết quả sai và bạn cần lý do để giải thích với người nhận về lỗi xuất hiện trong nội dung mà bạn đã gửi."}, {"val": "D", "text": "D. Khi người nhận có quyền lợi chính đáng được biết nguồn gốc, khi AI đóng vai trò lớn ảnh hưởng đến quyết định, hoặc khi quy định yêu cầu."}]}, {"num": "44", "text": "Sau 3 tháng dùng AI để sàng lọc hồ sơ ứng viên, bạn phát hiện AI có xu hướng ưu tiên một nhóm ứng viên nhất định một cách bất hợp lý. Hành động đúng nhất theo Deployment Diligence là gì?", "options": [{"val": "A", "text": "A. Dừng quy trình ngay, audit dữ liệu và logic đang dùng, báo cáo với lãnh đạo và xử lý triệt để nguyên nhân gốc trước khi tiếp tục."}, {"val": "B", "text": "B. Điều chỉnh prompt để AI ưu tiên nhóm còn lại nhiều hơn để cân bằng lại tỷ lệ giữa các nhóm ứng viên trong thời gian sắp tới."}, {"val": "C", "text": "C. Theo dõi thêm 3 tháng nữa để xem xu hướng này có tiếp tục diễn ra không trước khi đưa ra bất kỳ kết luận chính xác và hành động."}, {"val": "D", "text": "D. Thông báo cho ứng viên biết về hạn chế này và đề nghị họ nộp hồ sơ qua kênh thủ công thay thế nếu muốn được xem xét công bằng hơn."}]}, {"num": "45", "text": "Bạn cần dùng AI xử lý dữ liệu có chứa thông tin cá nhân của khách hàng. Hành động nào thể hiện Creation Diligence đúng đắn nhất?", "options": [{"val": "A", "text": "A. Nhập thẳng vào ChatGPT hoặc Claude vì các nền tảng lớn này thường có chính sách bảo mật tốt và rất đáng tin cậy cho người dùng."}, {"val": "B", "text": "B. Hỏi đồng nghiệp xem họ đã từng làm như vậy chưa và làm theo cách họ đã dùng trước đây để tiết kiệm thời gian tìm hiểu của bản thân."}, {"val": "C", "text": "C. Kiểm tra chính sách dữ liệu của AI tool và quy định nội bộ, ưu tiên ẩn danh hóa dữ liệu, và escalate lên người có thẩm quyền nếu cần."}, {"val": "D", "text": "D. Chỉ dùng AI nếu lượng dữ liệu khách hàng nhỏ dưới 100 bản ghi vì rủi ro với dữ liệu nhỏ thường thấp hơn nhiều so với dữ liệu lớn."}]}, {"num": "46", "text": "Khi chọn AI tool cho công việc quan trọng của tổ chức, yếu tố nào ngoài chất lượng output cần phải cân nhắc theo Creation Diligence?", "options": [{"val": "A", "text": "A. Màu sắc và giao diện của tool có phù hợp với brand identity và bộ nhận diện thương hiệu của tổ chức không khi nhân viên dùng hàng ngày."}, {"val": "B", "text": "B. Chính sách bảo mật dữ liệu, điều khoản sử dụng (dữ liệu nhập có được dùng để train model không), và mức độ kiểm soát bạn có với dữ liệu."}, {"val": "C", "text": "C. Số lượng người dùng và điểm đánh giá trên các nền tảng review — đây thường là chỉ số tổng hợp đáng tin cậy nhất khi chọn AI tool mới."}, {"val": "D", "text": "D. Tool có tích hợp sẵn với các phần mềm nội bộ đang dùng không vì tích hợp tốt sẽ tiết kiệm thời gian onboarding cho nhân viên rất nhiều."}]}, {"num": "47", "text": "Bạn chia sẻ với người khác một nội dung do AI tạo ra mà chưa được kiểm tra kỹ. Sau đó nội dung đó hóa ra có thông tin sai. Theo Deployment Diligence, ai chịu trách nhiệm?", "options": [{"val": "A", "text": "A. AI tool đã tạo ra thông tin sai đó — nhà cung cấp tool phải chịu trách nhiệm pháp lý và đạo đức về thông tin do hệ thống tạo ra."}, {"val": "B", "text": "B. Người nhận nội dung đó — họ có trách nhiệm tự kiểm tra thông tin trước khi tin tưởng và sử dụng vào công việc hay quyết định cá nhân."}, {"val": "C", "text": "C. Không ai chịu trách nhiệm rõ ràng vì đây là lỗi của AI, một hệ thống tự động không có chủ thể pháp lý chịu trách nhiệm cụ thể nào."}, {"val": "D", "text": "D. Bạn — người chia sẻ nội dung là người chịu trách nhiệm về những gì mình phát tán, bất kể công cụ nào được dùng để tạo ra nội dung đó."}]}, {"num": "48", "text": "Tổ chức của bạn đang xây dựng AI Usage Policy — chính sách sử dụng AI nội bộ. Nguyên tắc cốt lõi nào quan trọng nhất phải đưa vào chính sách này?", "options": [{"val": "A", "text": "A. Định nghĩa rõ loại dữ liệu nào được phép đưa vào AI, ai chịu trách nhiệm với output AI-assisted, và quy trình xử lý khi có sự cố xảy ra."}, {"val": "B", "text": "B. Liệt kê tất cả các AI tool được phép dùng và các tool bị cấm sử dụng, kèm lý do rõ ràng cho từng quyết định cho phép hoặc cấm dùng đó."}, {"val": "C", "text": "C. Yêu cầu tất cả nhân viên báo cáo mọi lần sử dụng AI vào log chung hàng ngày để lãnh đạo có thể theo dõi mức độ sử dụng AI của team."}, {"val": "D", "text": "D. Giới hạn quyền dùng AI chỉ cho nhân viên đã qua chứng nhận AI Fluency để kiểm soát rủi ro trong giai đoạn đầu triển khai chính sách mới."}]}, {"num": "49", "text": "Lãnh đạo yêu cầu bạn giải thích cơ sở của một quyết định mà bạn đưa ra một phần dựa trên phân tích của AI. Câu trả lời nào thể hiện Deployment Diligence tốt nhất?", "options": [{"val": "A", "text": "A. \"Tôi đã dùng AI phân tích và đây là kết luận của AI — tôi tin tưởng vào khả năng xử lý dữ liệu của model nên đã quyết định theo đó.\""}, {"val": "B", "text": "B. \"Dựa trên phân tích của team và một số công cụ hỗ trợ\" — không cần đề cập AI cụ thể để tránh tạo lo ngại không cần thiết cho lãnh đạo."}, {"val": "C", "text": "C. \"Tôi dùng AI tổng hợp [X] điểm dữ liệu và AI chỉ ra pattern A, B. Tôi đã verify với raw data và cross-check với kinh nghiệm team trước khi quyết định.\""}, {"val": "D", "text": "D. \"Đây là quyết định của tôi dựa trên dữ liệu và kinh nghiệm\" — quyết định cuối là của người nên không cần đề cập AI trong phần giải trình này."}]}, {"num": "50", "text": "Câu hỏi tổng hợp: Phát biểu nào phản ánh đúng nhất tinh thần cốt lõi của Diligence trong 4D Framework?", "options": [{"val": "A", "text": "A. Diligence có nghĩa là phải chậm lại và double-check mọi output của AI — tốc độ là kẻ thù lớn nhất của sự chính xác trong công việc."}, {"val": "B", "text": "B. Diligence nghĩa là dù AI mạnh đến đâu, người dùng vẫn chịu trách nhiệm — với đồng nghiệp, tổ chức, xã hội — về những gì AI tạo ra và chia sẻ."}, {"val": "C", "text": "C. Diligence có nghĩa là luôn phải có human review toàn bộ output AI trước khi đem ra sử dụng — không có bất kỳ ngoại lệ nào được phép có."}, {"val": "D", "text": "D. Diligence có nghĩa là chỉ dùng AI cho các tác vụ rủi ro thấp và tránh dùng AI cho bất kỳ quyết định nào có thể ảnh hưởng đến con người."}]}];
   
   let userAnswers = {};
   let timer1Interval = null;
   let timer2Interval = null;
-  let timeLeft1 = 30 * 60; // 30 MINUTES
-  let timeLeft2 = 10 * 60; // 10 MINUTES
+  let timeLeft1 = 30 * 60; 
+  let timeLeft2 = 10 * 60; 
   let isSubmitting = false;
+  let startTime = null;
   
-  // Render questions
   const qContainer = document.getElementById('questionsContainer');
   QUESTIONS.forEach((q, index) => {
     let qNum = index + 1;
@@ -280,7 +262,7 @@
     });
     el.classList.add('selected');
     el.querySelector('input').checked = true;
-    userAnswers[qNum] = val;
+    userAnswers["Q" + qNum] = val; // Store as Q1, Q2...
     
     document.getElementById('progressText').textContent = Object.keys(userAnswers).length + '/50 câu';
   }
@@ -294,21 +276,19 @@
       return;
     }
     
-    // Mark as started in LocalStorage
+    startTime = Date.now();
     localStorage.setItem(STATUS_KEY, "started");
     
-    // Switch to Part 1
     document.getElementById('introSection').classList.remove('active');
     document.getElementById('part1Section').classList.add('active');
     window.scrollTo(0, 0);
     
-    // Start Timer 1
     timer1Interval = setInterval(() => {
       timeLeft1--;
       updateTimerDisplay('timer1Display', timeLeft1);
       if(timeLeft1 <= 0) {
         clearInterval(timer1Interval);
-        finishPart1(); // force next
+        finishPart1(); 
       }
     }, 1000);
   }
@@ -325,22 +305,18 @@
 
   function finishPart1() {
     clearInterval(timer1Interval);
-    
-    // If they were locked, don't continue
     if (localStorage.getItem(STATUS_KEY) === "locked") return;
     
-    // Switch to Part 2
     document.getElementById('part1Section').classList.remove('active');
     document.getElementById('part2Section').classList.add('active');
     window.scrollTo(0, 0);
     
-    // Start Timer 2
     timer2Interval = setInterval(() => {
       timeLeft2--;
       updateTimerDisplay('timer2Display', timeLeft2);
       if(timeLeft2 <= 0) {
         clearInterval(timer2Interval);
-        submitFinal(); // force submit
+        submitFinal(); 
       }
     }, 1000);
   }
@@ -350,6 +326,11 @@
     isSubmitting = true;
     clearInterval(timer2Interval);
     
+    let timeTakenMinutes = 0;
+    if(startTime) {
+       timeTakenMinutes = Math.round((Date.now() - startTime) / 60000);
+    }
+    
     if(!isAutoLock) {
       localStorage.setItem(STATUS_KEY, "completed");
       const btn = document.getElementById('submitBtn');
@@ -357,14 +338,19 @@
       btn.style.opacity = "0.7";
     }
     
+    // Flat payload structure for Lark Webhook parsing
     const payload = {
-      name: document.getElementById('candName').value.trim() || "Unknown",
-      email: document.getElementById('candEmail').value.trim() || "Unknown",
-      answers: userAnswers,
-      essay: document.getElementById('essayAnswer') ? document.getElementById('essayAnswer').value.trim() : "",
-      submittedAt: new Date().toISOString(),
-      status: isAutoLock ? "LOCKED (Vi phạm quy chế)" : "COMPLETED"
+      "Name": document.getElementById('candName').value.trim() || "Unknown",
+      "Email": document.getElementById('candEmail').value.trim() || "Unknown",
+      "Status": isAutoLock ? "LOCKED (Vi phạm quy chế)" : "COMPLETED",
+      "CompletionTime": timeTakenMinutes + " phút",
+      "Essay": document.getElementById('essayAnswer') ? document.getElementById('essayAnswer').value.trim() : ""
     };
+    
+    // Inject Q1 to Q50 directly into payload root
+    for(let i = 1; i <= 50; i++) {
+        payload["Q" + i] = userAnswers["Q" + i] || "";
+    }
     
     try {
       await fetch(WEBHOOK_URL, {
